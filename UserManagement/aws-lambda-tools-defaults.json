@@ -12,6 +12,6 @@
     "s3-prefix"     : "UserManagement/",
     "template"      : "serverless.template",
     "template-parameters" : "",
-    "s3-bucket"           : "usermanagementlambdas3buckets",
-    "stack-name"          : "usermanagement-serverless-stack"
+    "s3-bucket" : "usermanagementlambdasbuckets",
+    "stack-name" : "usermanagement-serverless-stack"
 }
