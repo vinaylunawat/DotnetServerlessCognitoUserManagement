@@ -17,6 +17,11 @@
         "Policies": [
           "AWSLambda_FullAccess"
         ],
+        "Environment" : {
+        "Variables" : {
+        "AWSConfigurationOptions__ClientId":"{{resolve:secretsmanager:UserManagementLambdaSecret:SecretString:ClientId}}'"
+        }
+        },
         "Events": {
           "ProxyResource": {
             "Type": "Api",
