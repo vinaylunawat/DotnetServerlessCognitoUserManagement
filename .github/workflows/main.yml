@@ -11,7 +11,13 @@ jobs:
     env: 
       working-directory: ./UserManagement
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}        
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}   
+      ASPNETCORE_ENVIRONMENT: "Production"      
+      AWSConfigurationOptions__ClientId: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWSConfigurationOptions__ClientSecret: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      AWSConfigurationOptions__UserPoolClientId: ${{secrets.AWS_USERPOOLCLIENTID_KEY}}
+      AWSConfigurationOptions__UserPoolId: ${{secrets.AWS_USERPOOLID_KEY}}
+      AWSConfigurationOptions__UserPoolClientSecret: ${{secrets.AWS_USERPOOLCLIENTSECRET_KEY}}  
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
