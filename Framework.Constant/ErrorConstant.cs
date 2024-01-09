@@ -13,5 +13,7 @@
         public const string InvalidEmail = "Email is not valid";
 
         public const string InvalidUserName = "UserName is not valid";
+
+        public const string InvalidUserNamePassword = "Incorrect username or password.";
     }
 }

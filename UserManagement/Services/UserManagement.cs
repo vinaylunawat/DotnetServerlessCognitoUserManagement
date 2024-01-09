@@ -208,33 +208,36 @@ namespace UserManagement.Services
 
         public async Task<APIResponse<LoginResponseModel>> SignIn(LoginRequestModel model)
         {
-
             var responseBuilder = _responseBuilderFactory.GetBuilder<LoginResponseModel>();
-
-            AmazonCognitoIdentityProviderClient provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials());
-            CognitoUserPool userPool = new CognitoUserPool(_options.Value?.UserPoolId, _options.Value?.UserPoolClientId, provider);
-            CognitoUser user = new CognitoUser(model.UserName, _options.Value?.UserPoolClientId, userPool, provider);
-            InitiateSrpAuthRequest authRequest = new InitiateSrpAuthRequest()
+            try
             {
-                Password = model.Password
-            };
+                AmazonCognitoIdentityProviderClient provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials());
+                CognitoUserPool userPool = new CognitoUserPool(_options.Value?.UserPoolId, _options.Value?.UserPoolClientId, provider);
+                CognitoUser user = new CognitoUser(model.UserName, _options.Value?.UserPoolClientId, userPool, provider);
+                InitiateSrpAuthRequest authRequest = new InitiateSrpAuthRequest()
+                {
+                    Password = model.Password
+                };
 
-            AuthFlowResponse authResponse = await user.StartWithSrpAuthAsync(authRequest).ConfigureAwait(false);
+                AuthFlowResponse authResponse = await user.StartWithSrpAuthAsync(authRequest).ConfigureAwait(false);
 
-            if (authResponse.ChallengeName == ChallengeNameType.NEW_PASSWORD_REQUIRED)
-            {
-                return responseBuilder.AddError(new Error() { DevMessage = ErrorConstant.NewPasswordRequired, ErrorCode = (int)ErrorCode.NewPasswordRequired }).Build();
+                if (authResponse.ChallengeName == ChallengeNameType.NEW_PASSWORD_REQUIRED)
+                {
+                    return responseBuilder.AddError(new Error() { DevMessage = ErrorConstant.NewPasswordRequired, ErrorCode = (int)ErrorCode.NewPasswordRequired }).Build();
+                }
+
+                LoginResponseModel responseModel = new LoginResponseModel()
+                {
+                    AccessToken = authResponse.AuthenticationResult.AccessToken,
+                    ExpiresIn = authResponse.AuthenticationResult.ExpiresIn,
+                    RefreshToken = authResponse.AuthenticationResult.RefreshToken
+                };
+                return responseBuilder.AddSuccessData(responseModel).Build();
             }
-
-            LoginResponseModel responseModel = new LoginResponseModel()
+            catch (NotAuthorizedException ex)
             {
-                AccessToken = authResponse.AuthenticationResult.AccessToken,
-                ExpiresIn = authResponse.AuthenticationResult.ExpiresIn,
-                RefreshToken = authResponse.AuthenticationResult.RefreshToken
-            };
-            return responseBuilder.AddSuccessData(responseModel).Build();
-
-
+                return responseBuilder.AddError(new Error() { DevMessage = ErrorConstant.InvalidUserNamePassword, ErrorCode = (int)ErrorCode.InvalidUserNamePassword }).Build();
+            }
         }
 
         public async Task<bool> CreateUserIfNotExist(string username, string password, string userPoolId, List<AttributeType> attributeTypes)
