@@ -7,5 +7,6 @@
         NewPasswordRequired,
         InvalidEmail,
         InvalidUserName,
+        InvalidUserNamePassword,
     }
 }
