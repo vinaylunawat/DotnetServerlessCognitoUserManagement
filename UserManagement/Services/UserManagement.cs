@@ -10,7 +10,6 @@ using Framework.Service.DTO.Error;
 using Framework.Service.Enums;
 using Framework.Service.Validators;
 using Microsoft.Extensions.Options;
-using System.Data.Entity.Core.Metadata.Edm;
 using UserManagement.Models;
 using UserManagement.Validators;
 
