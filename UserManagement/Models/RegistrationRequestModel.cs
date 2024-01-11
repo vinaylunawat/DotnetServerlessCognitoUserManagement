@@ -5,6 +5,7 @@ namespace UserManagement.Models
 {
     public class RegistrationRequestModel
     {
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
