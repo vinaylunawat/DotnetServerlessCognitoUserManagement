@@ -45,6 +45,8 @@ namespace UserManagement.Services
             {
                 return responseBuilder.AddError(new Error() { DevMessage = ErrorConstant.UserAlreadyExist, ErrorCode = (int)ErrorCode.DuplicateFound }).Build();
             }
+            Random rnd = new Random();
+            string customerId= rnd.Next(0, 1000000).ToString("D6");
 
             AdminUpdateUserAttributesRequest adminUpdateUserAttributesRequest = new AdminUpdateUserAttributesRequest
             {
@@ -70,7 +72,12 @@ namespace UserManagement.Services
                         new AttributeType()
                         {
                             Name = "phone_number",
-                            Value = "+919910557653"
+                            Value = model.PhoneNumber
+                        },
+                        new AttributeType()
+                        {
+                            Name ="custom:CustomerId",
+                            Value = customerId
                         }
                     }
             };
@@ -228,6 +235,7 @@ namespace UserManagement.Services
 
                 LoginResponseModel responseModel = new LoginResponseModel()
                 {
+                    IdToken = authResponse.AuthenticationResult.IdToken,
                     AccessToken = authResponse.AuthenticationResult.AccessToken,
                     ExpiresIn = authResponse.AuthenticationResult.ExpiresIn,
                     RefreshToken = authResponse.AuthenticationResult.RefreshToken
