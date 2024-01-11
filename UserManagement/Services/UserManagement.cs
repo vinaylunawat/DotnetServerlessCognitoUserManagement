@@ -10,6 +10,7 @@ using Framework.Service.DTO.Error;
 using Framework.Service.Enums;
 using Framework.Service.Validators;
 using Microsoft.Extensions.Options;
+using System.Data.Entity.Core.Metadata.Edm;
 using UserManagement.Models;
 using UserManagement.Validators;
 
@@ -40,7 +41,7 @@ namespace UserManagement.Services
             if (errors.Count.IsValid())
                 return responseBuilder.AddErrors(errors).Build();
 
-            var ifExist = await CreateUserIfNotExist(model.UserName, model.Password, _options.Value.UserPoolId, default);
+            var ifExist = await CreateUserIfNotExist(model.UserName, model.Password, model.UserRole.ToString(), _options.Value.UserPoolId, default);
             if (!ifExist)
             {
                 return responseBuilder.AddError(new Error() { DevMessage = ErrorConstant.UserAlreadyExist, ErrorCode = (int)ErrorCode.DuplicateFound }).Build();
@@ -240,7 +241,7 @@ namespace UserManagement.Services
             }
         }
 
-        public async Task<bool> CreateUserIfNotExist(string username, string password, string userPoolId, List<AttributeType> attributeTypes)
+        public async Task<bool> CreateUserIfNotExist(string username, string password, string userRole, string userPoolId, List<AttributeType> attributeTypes)
         {
             try
             {
@@ -254,6 +255,15 @@ namespace UserManagement.Services
                 AdminCreateUserResponse adminCreateUserResponse = await adminAmazonCognitoIdentityProviderClient
                     .AdminCreateUserAsync(adminCreateUserRequest)
                     .ConfigureAwait(false);
+
+                AdminAddUserToGroupRequest request = new AdminAddUserToGroupRequest
+                {
+                    GroupName = userRole,
+                    Username = username,
+                    UserPoolId = userPoolId,
+                };
+
+                var response = await adminAmazonCognitoIdentityProviderClient.AdminAddUserToGroupAsync(request);
 
                 return true;
             }

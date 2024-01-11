@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using UserManagement.Enumerations;
 
 namespace UserManagement.Models
 {
@@ -29,6 +30,7 @@ namespace UserManagement.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-
+        [Required]
+        public UserType UserRole { get; set; }
     }
 }
